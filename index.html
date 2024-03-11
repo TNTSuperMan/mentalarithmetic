@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フラッシュ暗算</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        body{
+            background:black;
+        }
+        p{
+            color:green;
+            text-align:center;
+            font-size:100px; 
+            margin: 15%;
+        }
+        button{
+            font-size:25px; 
+        }
+        div#cfg{
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <p>{{text}}</p>
+        <div id="cfg" v-show="isscfg">
+            <button v-on:click="start">始める</button><br>
+            回数:<input type="number" v-model="maxcount"><br>
+            桁数:<input type="number" v-model="dig"><br>
+            一秒に表示する数:<input type="number" v-model="intriam">
+        </div>
+    </div>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data:{
+                isscfg:true,
+                intriam:7,
+
+                dig:5,
+                digit:100000,
+
+                interval:0,
+                maxcount:50,
+
+                count:0,
+                nums:[],
+                text:"フラッシュ暗算"
+            },methods:{
+                start:e=>{
+                    app.isscfg = false;
+                    app.digit = 10 ** app.dig - 1;
+                    app.interval = (1000 / app.intriam);
+                    app.count = 0;
+                    app.text = "3";
+                    app.nums = [];
+                    setTimeout(e=>{
+                        app.text = "2";
+                        setTimeout(e=>{
+                            app.text = "1";
+                            setTimeout(e=>{
+                                setTimeout(nextcallBack,app.interval);
+                            },1000);
+                        },1000);
+                    },1000);
+                }
+            }
+        });
+        function nextcallBack(){
+            app.count++;
+            
+            let r = Math.floor(Math.random() * app.digit);
+            app.nums.push(r);
+            while(r.toString().length < app.dig){
+                r = "0" + r.toString();
+            }
+            app.text = r;
+            if(app.count >= app.maxcount){
+                setTimeout(e=>{
+                    app.text = "フラッシュ暗算";
+                    let ans = 0;
+                    app.nums.forEach(e=>ans+=e);
+                    console.log(ans);
+                    app.isscfg = true;
+                },app.interval);
+                return;
+            }
+            setTimeout(nextcallBack,app.interval);
+        }
+        /*
+        let showarray = [];
+        let keta = 10000;
+        let wait = 50;
+        let count = 0;
+        let max = 10;
+        let text;
+        function nextcallBack(){
+            let r = Math.floor(Math.random() * keta);
+            showarray.push(r);
+            while(r.toString().length < (keta.toString().length - 1)){
+                r = r.toString() + "0";
+            }
+            text.innerText = r;
+            count++;
+            if(max < count) {
+                setTimeout(e=>{
+                    text.innerText = "フラッシュ暗算";
+                    document.querySelector("div#cfg").style.display="block";
+                },wait);
+                return;
+            }
+            setTimeout(nextcallBack,wait);
+        }
+        function start(){
+            document.querySelector("div#cfg").style.display="none";
+            text = document.querySelector("p");
+            keta = 100000;
+            wait = 25;
+            count = 0;
+            max = 100;
+            
+            text.innerText = "3";
+            setTimeout(e=>{
+                text.innerText = "2";
+                setTimeout(e=>{
+                    text.innerText = "1";
+                    setTimeout(e=>{
+                        setTimeout(nextcallBack,wait);
+                    },1000);
+                },1000);
+            },1000);
+        }*/
+    </script>
+</body>
+</html>
