@@ -30,8 +30,10 @@
             <button v-on:click="start">始める</button><br>
             回数:<input type="number" v-model="maxcount"><br>
             桁数:<input type="number" v-model="dig"><br>
-            一秒に表示する数:<input type="number" v-model="intriam">
+            一秒に表示する数:<input type="number" v-model="intriam"><br>
+            効果音:<input type="file" v-on:change="sechange">
         </div>
+        <audio v-bind:src="sefile"></audio>
     </div>
     <script>
         let app = new Vue({
@@ -47,6 +49,7 @@
                 maxcount:50,
 
                 count:0,
+                sefile:"",
                 nums:[],
                 text:"フラッシュ暗算"
             },methods:{
@@ -57,15 +60,31 @@
                     app.count = 0;
                     app.text = "3";
                     app.nums = [];
+                    se();
                     setTimeout(e=>{
                         app.text = "2";
+                        se();
                         setTimeout(e=>{
                             app.text = "1";
+                            se();
                             setTimeout(e=>{
                                 setTimeout(nextcallBack,app.interval);
                             },1000);
                         },1000);
                     },1000);
+                },sechange:e=>{
+                    if(e.srcElement.files.length >= 1){
+                        let f = e.srcElement.files[0];
+                        app.sefile = "data:" + f.type + ";base64,";
+                        f.arrayBuffer().then(t=>{
+                            const ui8aa = new Uint8Array(t);
+                            const decodebs = u => u.reduce(
+                                (bs,u8)=>bs+String.fromCharCode(u8),''
+                            );
+                            const bsa = decodebs(ui8aa);
+                            app.sefile += btoa(bsa);
+                        })
+                    }
                 }
             }
         });
@@ -88,51 +107,14 @@
                 },app.interval);
                 return;
             }
+            se();
             setTimeout(nextcallBack,app.interval);
         }
-        /*
-        let showarray = [];
-        let keta = 10000;
-        let wait = 50;
-        let count = 0;
-        let max = 10;
-        let text;
-        function nextcallBack(){
-            let r = Math.floor(Math.random() * keta);
-            showarray.push(r);
-            while(r.toString().length < (keta.toString().length - 1)){
-                r = r.toString() + "0";
-            }
-            text.innerText = r;
-            count++;
-            if(max < count) {
-                setTimeout(e=>{
-                    text.innerText = "フラッシュ暗算";
-                    document.querySelector("div#cfg").style.display="block";
-                },wait);
-                return;
-            }
-            setTimeout(nextcallBack,wait);
+        function se(){
+            let see = document.querySelector("audio");
+            see.currentTime = 0;
+            see.play();
         }
-        function start(){
-            document.querySelector("div#cfg").style.display="none";
-            text = document.querySelector("p");
-            keta = 100000;
-            wait = 25;
-            count = 0;
-            max = 100;
-            
-            text.innerText = "3";
-            setTimeout(e=>{
-                text.innerText = "2";
-                setTimeout(e=>{
-                    text.innerText = "1";
-                    setTimeout(e=>{
-                        setTimeout(nextcallBack,wait);
-                    },1000);
-                },1000);
-            },1000);
-        }*/
     </script>
 </body>
 </html>
