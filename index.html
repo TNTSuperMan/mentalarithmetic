@@ -97,6 +97,7 @@
                 r = "0" + r.toString();
             }
             app.text = r;
+            se();
             if(app.count >= app.maxcount){
                 setTimeout(e=>{
                     app.text = "フラッシュ暗算";
@@ -107,7 +108,6 @@
                 },app.interval);
                 return;
             }
-            se();
             setTimeout(nextcallBack,app.interval);
         }
         function se(){
